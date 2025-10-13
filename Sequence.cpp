@@ -87,9 +87,16 @@ std::string& Sequence::operator[](size_t position) {
 }
 // The value of item is appended to the sequence.
 void Sequence::push_back(std::string item) {
-    tail->next = new SequenceNode;
-    tail->next->prev = tail;
-    tail = tail->next;
+    if (sequenceSize == 0) {
+        head = new SequenceNode;
+        tail = head;
+    }
+    else {
+        tail->next = new SequenceNode;
+        tail->next->prev = tail;
+        tail = tail->next;
+    }
+    sequenceSize++;
 }
 // The item at the end of the sequence is deleted and size of the sequence is
 // reduced by one. If sequence was empty, throws an exception
@@ -97,27 +104,48 @@ void Sequence::pop_back() {
     tail->prev = tail;
     delete tail->next;
     tail->next = nullptr;
+    sequenceSize--;
 }
 // The position satisfies ( position >= 0 && position <= last_index() ). The
 // value of item is inserted at position and the size of sequence is increased
 // by one. Throws an exception if the position is outside the bounds of the
 // sequence
 void Sequence::insert(size_t position, std::string item) {
-
+    SequenceNode* travel=head;
+    SequenceNode* hold;
+    for (size_t i = 0; i < position; i++) {
+        travel = travel->next;
+    }
+    if (position == 0) {
+        head = new SequenceNode;
+        travel->prev = head;
+        head->next = travel;
+    }
+    else {
+        travel->prev->next = new SequenceNode;
+        travel->prev->next->prev = travel->prev;
+        travel->prev = travel->prev->next;
+        travel->prev->next = travel;
+        travel->prev->item = item;
+    }
+    sequenceSize++;
 }
 // Returns the first element in the sequence. If the sequence is empty, throw an
 // exception.
 std::string Sequence::front() const {
-
+return head->item;
 }
 // Return the last element in the sequence. If the sequence is empty, throw an
 // exception.
 std::string Sequence::back() const {
-
+return tail->item;
 }
 // Return true if the sequence has no elements, otherwise false.
 bool Sequence::empty() const {
-
+    SequenceNode* travel=head;
+    while (travel != nullptr) {
+        travel = travel->next;
+    }
 }
 // Return the number of elements in the sequence.
 size_t Sequence::size() const {
@@ -140,10 +168,12 @@ void Sequence::erase(size_t position) {
 void Sequence::erase(size_t position, size_t count) {
     SequenceNode* travel=head;
     for ( size_t i = 0; i < position; i++ ) {
-
+        travel->next = travel;
     }
     for ( size_t i = position; i < position + count; i++ ) {
-
+        // FIXME
+        // this will need to grab the next of the start and the prev of the end
+        travel->next = travel;
     }
 }
 // Outputs all elements (ex: <4, 8, 15, 16, 23, 42>) as a string to the output
