@@ -6,6 +6,8 @@
 / functions and variables both public and private for the Sequence class
 */
 
+//TODO: finish delete functions and exceptions, Then test traversal.
+
 #include "Sequence.h"
 
 // Creates an empty sequence (numElts == 0) or a sequence of numElts items
@@ -94,6 +96,7 @@ void Sequence::push_back(std::string item) {
     else {
         tail->next = new SequenceNode;
         tail->next->prev = tail;
+        tail->item = item;
         tail = tail->next;
     }
     sequenceSize++;
@@ -142,10 +145,8 @@ return tail->item;
 }
 // Return true if the sequence has no elements, otherwise false.
 bool Sequence::empty() const {
-    SequenceNode* travel=head;
-    while (travel != nullptr) {
-        travel = travel->next;
-    }
+    if (sequenceSize) return true;
+    else return false;
 }
 // Return the number of elements in the sequence.
 size_t Sequence::size() const {
@@ -155,12 +156,21 @@ return sequenceSize;
 // sequence is released, resetting the sequence to an empty state that can have
 // items re-inserted.
 void Sequence::clear() {
-erase(0, sequenceSize);
+    for (size_t i = 0; i < sequenceSize; i++) {
+        pop_back();
+    }
 }
 // The item at position is removed from the sequence, and the memory
 // is released. If called with an invalid position throws an exception.
 void Sequence::erase(size_t position) {
-
+    SequenceNode* travel=head;
+    for ( size_t i = 0; i < position; i++ ) {
+        travel->next = travel;
+    }
+    travel->prev->next = travel->next->prev;
+    travel->next->prev = travel->prev->next;
+    delete travel;
+    sequenceSize--;
 }
 // The items in the sequence at ( position ... (position + count - 1) ) are
 // deleted and their memory released. If called with invalid position and/or
@@ -168,12 +178,21 @@ void Sequence::erase(size_t position) {
 void Sequence::erase(size_t position, size_t count) {
     SequenceNode* travel=head;
     for ( size_t i = 0; i < position; i++ ) {
-        travel->next = travel;
+        travel = travel->next;
     }
+    SequenceNode* start = travel->prev;
     for ( size_t i = position; i < position + count; i++ ) {
-        // FIXME
-        // this will need to grab the next of the start and the prev of the end
-        travel->next = travel;
+        if (i < sequenceSize) {
+            travel = travel->next;
+            delete travel->prev;
+            start->next = travel;
+        }
+        else {
+            tail = start;
+            tail->next = nullptr;
+            delete travel;
+            sequenceSize--;
+        }
     }
 }
 // Outputs all elements (ex: <4, 8, 15, 16, 23, 42>) as a string to the output
