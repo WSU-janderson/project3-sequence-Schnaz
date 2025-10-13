@@ -27,26 +27,63 @@ Sequence::Sequence(size_t sz) {
 }
 // Creates a (deep) copy of sequence s
 Sequence::Sequence(const Sequence& s) {
-    clear();
-
+    sequenceSize = s.sequenceSize;
+    if (sequenceSize > 0) {
+        head = new SequenceNode;
+        head->item = s.head->item;
+        tail = head;
+        SequenceNode* travel = s.head;
+        for (size_t i = sequenceSize; i > 1; i++) {
+            SequenceNode* hold = tail;
+            travel = travel->next;
+            tail = new SequenceNode;
+            tail->item = travel->item;
+            head->next = tail;
+            tail->prev = hold;
+        }
+    }
 }
 // Destroys all items in the sequence and release the memory
 // associated with the sequence
 Sequence::~Sequence() {
     clear();
-    delete this;
 }
 // The current sequence is released and replaced by a (deep) copy of sequence
 // s. A reference to the copied sequence is returned (return *this;).
 Sequence& Sequence::operator=(const Sequence& s) {
-
+    clear();
+    sequenceSize = s.sequenceSize;
+    if (sequenceSize > 0) {
+        head = new SequenceNode;
+        head->item = s.head->item;
+        tail = head;
+        SequenceNode* travel = s.head;
+        for (size_t i = sequenceSize; i > 1; i++) {
+            SequenceNode* hold = tail;
+            travel = travel->next;
+            tail = new SequenceNode;
+            tail->item = travel->item;
+            head->next = tail;
+            tail->prev = hold;
+        }
+    }
+    return *this;
 }
 // The position satisfies ( position >= 0 && position <= last_index() ).
 // The return value is a reference to the item at index position in the
 // sequence. Throws an exception if the position is outside the bounds
 // of the sequence
 std::string& Sequence::operator[](size_t position) {
-
+    if ( position > sequenceSize - 1 ) {
+        throw std::exception();
+    }
+    else {
+        SequenceNode* travel = head;
+        for (size_t i=0; i < position; i++) {
+            travel = travel->next;
+        }
+        return travel->item;
+    }
 }
 // The value of item is append to the sequence.
 void Sequence::push_back(std::string item) {
@@ -59,7 +96,7 @@ void Sequence::pop_back() {
 }
 // The position satisfies ( position >= 0 && position <= last_index() ). The
 // value of item is inserted at position and the size of sequence is increased
-// by one. Throws an exceptionif the position is outside the bounds of the
+// by one. Throws an exception if the position is outside the bounds of the
 // sequence
 void Sequence::insert(size_t position, std::string item) {
 
