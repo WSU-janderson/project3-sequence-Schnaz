@@ -11,26 +11,25 @@
 #include <string>
 
 class SequenceNode {
-public: // to make it easier, we can make the data members public so we don't need getters and setters
-    SequenceNode* next; // pointer to next Node. If node is the tail, next is nullptr
-    SequenceNode* prev; // pointer to previous Node. If node is the head, prev is nullptr
-    std::string item; // the element being stored in the node default constructor, ensure next and prev are nullptr
+    public: // to make it easier, we can make the data members public so we don't need getters and setters
+        SequenceNode* next; // pointer to next Node. If node is the tail, next is nullptr
+        SequenceNode* prev; // pointer to previous Node. If node is the head, prev is nullptr
+        std::string item; // the element being stored in the node default constructor, ensure next and prev are nullptr
 
-    // default class constructor set to populate next and prev with null pointers
-    SequenceNode() : next(nullptr), prev(nullptr) {}
+        // default class constructor set to populate next and prev with null pointers
+        SequenceNode() : next(nullptr), prev(nullptr) {}
 
-    /// parameterized constructor, next and prev are set to nullptr and the
-    /// node's element is set to the given value
-    SequenceNode(std::string item) : next(nullptr), prev(nullptr), item(item) {}
+        /// parameterized constructor, next and prev are set to nullptr and the
+        /// node's element is set to the given value
+        SequenceNode(std::string item) : next(nullptr), prev(nullptr), item(item) {}
 };
 
 class Sequence {
-    private:
+    public:
         SequenceNode* head; // Pointer to first element in the sequence
         SequenceNode* tail; // Pointer to last element in the sequence
         size_t sequenceSize; // Number of elements in the sequence
 
-    public:
         // Creates an empty sequence or a sequence with "sz" number of nullptrs
         Sequence(size_t sz = 0);
 

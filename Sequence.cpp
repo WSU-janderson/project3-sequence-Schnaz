@@ -17,10 +17,10 @@ Sequence::Sequence(size_t sz) {
     if (sz > 0) {
         head = new SequenceNode;
         tail = head;
-        for (size_t i = sz; i > 1; i++) {
+        for (size_t i = 0; i < sequenceSize - 1; i++) {
             SequenceNode* hold = tail;
             tail = new SequenceNode;
-            head->next = tail;
+            hold->next = tail;
             tail->prev = hold;
         }
     }
@@ -33,7 +33,7 @@ Sequence::Sequence(const Sequence& s) {
         head->item = s.head->item;
         tail = head;
         SequenceNode* travel = s.head;
-        for (size_t i = sequenceSize; i > 1; i++) {
+        for (size_t i = 0; i < sequenceSize - 1; i++) {
             SequenceNode* hold = tail;
             travel = travel->next;
             tail = new SequenceNode;
@@ -58,7 +58,7 @@ Sequence& Sequence::operator=(const Sequence& s) {
         head->item = s.head->item;
         tail = head;
         SequenceNode* travel = s.head;
-        for (size_t i = sequenceSize; i > 1; i++) {
+        for (size_t i = 0; i < sequenceSize - 1; i++) {
             SequenceNode* hold = tail;
             travel = travel->next;
             tail = new SequenceNode;
@@ -79,13 +79,13 @@ std::string& Sequence::operator[](size_t position) {
     }
     else {
         SequenceNode* travel = head;
-        for (size_t i=0; i < position; i++) {
+        for (size_t i = 0; i < position; i++) {
             travel = travel->next;
         }
         return travel->item;
     }
 }
-// The value of item is append to the sequence.
+// The value of item is appended to the sequence.
 void Sequence::push_back(std::string item) {
 
 }
@@ -117,7 +117,7 @@ bool Sequence::empty() const {
 }
 // Return the number of elements in the sequence.
 size_t Sequence::size() const {
-
+return sequenceSize;
 }
 // All items in the sequence are deleted and the memory associated with the
 // sequence is released, resetting the sequence to an empty state that can have
@@ -140,5 +140,10 @@ void Sequence::erase(size_t position, size_t count) {
 // stream. This is *not* a method of the Sequence class, but instead it is a
 // friend function
 std::ostream& operator<<(std::ostream& os, const Sequence& s) {
-
+    SequenceNode* travel=s.head;
+    while (travel != nullptr) {
+        os << travel->item + " ";
+        travel = travel->next;
+    }
+    return os;
 }
