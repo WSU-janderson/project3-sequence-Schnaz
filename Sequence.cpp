@@ -11,16 +11,30 @@
 // Creates an empty sequence (numElts == 0) or a sequence of numElts items
 // indexed from 0 ... (numElts - 1).
 Sequence::Sequence(size_t sz) {
-
+    sequenceSize = sz;
+    head = nullptr;
+    tail = nullptr;
+    if (sz > 0) {
+        head = new SequenceNode;
+        tail = head;
+        for (size_t i = sz; i > 1; i++) {
+            SequenceNode* hold = tail;
+            tail = new SequenceNode;
+            head->next = tail;
+            tail->prev = hold;
+        }
+    }
 }
 // Creates a (deep) copy of sequence s
 Sequence::Sequence(const Sequence& s) {
+    clear();
 
 }
 // Destroys all items in the sequence and release the memory
 // associated with the sequence
 Sequence::~Sequence() {
-
+    clear();
+    delete this;
 }
 // The current sequence is released and replaced by a (deep) copy of sequence
 // s. A reference to the copied sequence is returned (return *this;).
@@ -72,7 +86,7 @@ size_t Sequence::size() const {
 // sequence is released, resetting the sequence to an empty state that can have
 // items re-inserted.
 void Sequence::clear() {
-
+erase(0, sequenceSize);
 }
 // The item at position is removed from the sequence, and the memory
 // is released. If called with an invalid position throws an exception.
@@ -88,6 +102,6 @@ void Sequence::erase(size_t position, size_t count) {
 // Outputs all elements (ex: <4, 8, 15, 16, 23, 42>) as a string to the output
 // stream. This is *not* a method of the Sequence class, but instead it is a
 // friend function
-friend std::ostream& operator<<(std::ostream& os, const Sequence& s) {
+std::ostream& operator<<(std::ostream& os, const Sequence& s) {
 
 }
