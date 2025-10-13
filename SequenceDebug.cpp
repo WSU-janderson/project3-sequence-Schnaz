@@ -22,6 +22,7 @@ int main() {
     seq[4]="one";
     seq[2]="two";
     seq[0]="three";
+    seq.clear();
     cout << seq << endl;
     return 0;
 }
