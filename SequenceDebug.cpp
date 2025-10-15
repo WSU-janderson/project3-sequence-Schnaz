@@ -21,7 +21,12 @@ int main() {
     seq[1] = "one";
     seq[2] = "two";
     //seq[3] = "three";
-    seq.push_back("pushback");
+    seq.push_back("three");
+    seq.push_back("four");
+    seq.push_back("five");
+    seq.pop_back();
+    seq.erase(3,2);
+    seq.insert(0, "extra");
     //seq.push_back("pushback2");
     //seq.push_back("pushback3");
     seq.erase(3);
