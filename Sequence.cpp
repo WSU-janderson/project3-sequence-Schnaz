@@ -6,13 +6,13 @@
 / functions and variables both public and private for the Sequence class
 */
 
-//TODO: finish delete functions and exceptions, Then test traversal.
+//TODO: test exceptions and traversal.
 
 #include "Sequence.h"
 
 // Creates an empty sequence (numElts == 0) or a sequence of numElts items
 // indexed from 0 ... (numElts - 1).
-Sequence::Sequence(size_t sz) {
+Sequence::Sequence(size_t sz) { // GOOD
     sequenceSize = sz;
     head = nullptr;
     tail = nullptr;
@@ -28,7 +28,7 @@ Sequence::Sequence(size_t sz) {
     }
 }
 // Creates a (deep) copy of sequence s
-Sequence::Sequence(const Sequence& s) {
+Sequence::Sequence(const Sequence& s) { // TEST
     sequenceSize = s.sequenceSize;
     if (sequenceSize > 0) {
         head = new SequenceNode;
@@ -47,12 +47,12 @@ Sequence::Sequence(const Sequence& s) {
 }
 // Destroys all items in the sequence and release the memory
 // associated with the sequence
-Sequence::~Sequence() {
+Sequence::~Sequence() { // TEST
     clear();
 }
 // The current sequence is released and replaced by a (deep) copy of sequence
 // s. A reference to the copied sequence is returned (return *this;).
-Sequence& Sequence::operator=(const Sequence& s) {
+Sequence& Sequence::operator=(const Sequence& s) { // TEST
     clear();
     sequenceSize = s.sequenceSize;
     if (sequenceSize > 0) {
@@ -75,8 +75,8 @@ Sequence& Sequence::operator=(const Sequence& s) {
 // The return value is a reference to the item at index position in the
 // sequence. Throws an exception if the position is outside the bounds
 // of the sequence
-std::string& Sequence::operator[](size_t position) {
-    if ( position > sequenceSize - 1 ) {
+std::string& Sequence::operator[](size_t position) { // TEST
+    if ( (position > sequenceSize - 1) || !(position + 1) ) {
         throw std::exception();
     }
     else {
@@ -88,7 +88,7 @@ std::string& Sequence::operator[](size_t position) {
     }
 }
 // The value of item is appended to the sequence.
-void Sequence::push_back(std::string item) {
+void Sequence::push_back(std::string item) { // TEST
     if (sequenceSize == 0) {
         head = new SequenceNode;
         tail = head;
@@ -96,14 +96,17 @@ void Sequence::push_back(std::string item) {
     else {
         tail->next = new SequenceNode;
         tail->next->prev = tail;
-        tail->item = item;
         tail = tail->next;
+        tail->item = item;
     }
     sequenceSize++;
 }
 // The item at the end of the sequence is deleted and size of the sequence is
 // reduced by one. If sequence was empty, throws an exception
-void Sequence::pop_back() {
+void Sequence::pop_back() { // TEST
+    if (empty()) {
+        throw std::exception();
+    }
     tail->prev = tail;
     delete tail->next;
     tail->next = nullptr;
@@ -113,7 +116,10 @@ void Sequence::pop_back() {
 // value of item is inserted at position and the size of sequence is increased
 // by one. Throws an exception if the position is outside the bounds of the
 // sequence
-void Sequence::insert(size_t position, std::string item) {
+void Sequence::insert(size_t position, std::string item) { // ADD EXCEPTION
+    if ( (position > sequenceSize - 1) || !(position + 1) ) {
+        throw std::exception();
+    }
     SequenceNode* travel=head;
     SequenceNode* hold;
     for (size_t i = 0; i < position; i++) {
@@ -135,18 +141,24 @@ void Sequence::insert(size_t position, std::string item) {
 }
 // Returns the first element in the sequence. If the sequence is empty, throw an
 // exception.
-std::string Sequence::front() const {
-return head->item;
+std::string Sequence::front() const { // TEST
+    if (empty()) {
+        throw std::exception();
+    }
+    return head->item;
 }
 // Return the last element in the sequence. If the sequence is empty, throw an
 // exception.
-std::string Sequence::back() const {
-return tail->item;
+std::string Sequence::back() const { // TEST
+    if (empty()) {
+        throw std::exception();
+    }
+    return tail->item;
 }
 // Return true if the sequence has no elements, otherwise false.
 bool Sequence::empty() const {
-    if (sequenceSize) return true;
-    else return false;
+    if (sequenceSize) return false;
+    return true;
 }
 // Return the number of elements in the sequence.
 size_t Sequence::size() const {
@@ -155,50 +167,60 @@ return sequenceSize;
 // All items in the sequence are deleted and the memory associated with the
 // sequence is released, resetting the sequence to an empty state that can have
 // items re-inserted.
-void Sequence::clear() {
+void Sequence::clear() { // TEST
     for (size_t i = 0; i < sequenceSize; i++) {
         pop_back();
     }
+    sequenceSize=0;
 }
 // The item at position is removed from the sequence, and the memory
 // is released. If called with an invalid position throws an exception.
-void Sequence::erase(size_t position) {
+void Sequence::erase(size_t position) { // TEST
+    if ( (position > sequenceSize - 1) || !(position + 1) ) {
+        throw std::exception();
+    }
     SequenceNode* travel=head;
     for ( size_t i = 0; i < position; i++ ) {
-        travel->next = travel;
+        travel = travel->next;
     }
-    travel->prev->next = travel->next->prev;
-    travel->next->prev = travel->prev->next;
+    if (sequenceSize == 1) {
+        delete travel;
+        sequenceSize--;
+        head = nullptr;
+        tail = nullptr;
+        return;
+    }
+    if (position == 0) {
+        travel->next->prev = nullptr;
+        head = travel->next;
+    }
+    else travel->prev->next = travel->next;
+
+    if (position == sequenceSize) {
+        travel->prev->next = nullptr;
+        tail = travel->prev;
+    }
+    else travel->next->prev = travel->prev;
+
     delete travel;
     sequenceSize--;
 }
 // The items in the sequence at ( position ... (position + count - 1) ) are
 // deleted and their memory released. If called with invalid position and/or
 // count throws an exception.
-void Sequence::erase(size_t position, size_t count) {
-    SequenceNode* travel=head;
-    for ( size_t i = 0; i < position; i++ ) {
-        travel = travel->next;
+void Sequence::erase(size_t position, size_t count) { // TEST
+    if ( (position > sequenceSize - 1) || !(position + 1) || (count + position > sequenceSize) || !(count + 1)) {
+        throw std::exception();
     }
-    SequenceNode* start = travel->prev;
-    for ( size_t i = position; i < position + count; i++ ) {
-        if (i < sequenceSize) {
-            travel = travel->next;
-            delete travel->prev;
-            start->next = travel;
-        }
-        else {
-            tail = start;
-            tail->next = nullptr;
-            delete travel;
-            sequenceSize--;
-        }
+    SequenceNode* travel=head;
+    for (size_t i = 0; i < count; i++) {
+        erase(position);
     }
 }
 // Outputs all elements (ex: <4, 8, 15, 16, 23, 42>) as a string to the output
 // stream. This is *not* a method of the Sequence class, but instead it is a
 // friend function
-std::ostream& operator<<(std::ostream& os, const Sequence& s) {
+std::ostream& operator<<(std::ostream& os, const Sequence& s) { // GOOD
     SequenceNode* travel=s.head;
     while (travel != nullptr) {
         os << travel->item + " ";
