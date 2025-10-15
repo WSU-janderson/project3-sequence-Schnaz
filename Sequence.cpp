@@ -75,17 +75,15 @@ Sequence& Sequence::operator=(const Sequence& s) { // TEST
 // The return value is a reference to the item at index position in the
 // sequence. Throws an exception if the position is outside the bounds
 // of the sequence
-std::string& Sequence::operator[](size_t position) { // TEST
+std::string& Sequence::operator[](size_t position) { // GOOD
     if ( (position > sequenceSize - 1) || !(position + 1) ) {
         throw std::exception();
     }
-    else {
-        SequenceNode* travel = head;
-        for (size_t i = 0; i < position; i++) {
-            travel = travel->next;
-        }
-        return travel->item;
+    SequenceNode* travel = head;
+    for (size_t i = 0; i < position; i++) {
+        travel = travel->next;
     }
+    return travel->item;
 }
 // The value of item is appended to the sequence.
 void Sequence::push_back(std::string item) { // TEST
@@ -107,7 +105,14 @@ void Sequence::pop_back() { // TEST
     if (empty()) {
         throw std::exception();
     }
-    tail->prev = tail;
+    if (sequenceSize == 1) {
+        delete tail;
+        head = nullptr;
+        tail = nullptr;
+        sequenceSize--;
+        return;
+    }
+    tail = tail->prev;
     delete tail->next;
     tail->next = nullptr;
     sequenceSize--;
@@ -161,21 +166,21 @@ bool Sequence::empty() const {
     return true;
 }
 // Return the number of elements in the sequence.
-size_t Sequence::size() const {
+size_t Sequence::size() const { //GOOD
 return sequenceSize;
 }
 // All items in the sequence are deleted and the memory associated with the
 // sequence is released, resetting the sequence to an empty state that can have
 // items re-inserted.
-void Sequence::clear() { // TEST
-    for (size_t i = 0; i < sequenceSize; i++) {
+void Sequence::clear() { // GOOD?
+    for (size_t i = sequenceSize; i; i--) {
         pop_back();
     }
     sequenceSize=0;
 }
 // The item at position is removed from the sequence, and the memory
 // is released. If called with an invalid position throws an exception.
-void Sequence::erase(size_t position) { // TEST
+void Sequence::erase(size_t position) { // GOOD?
     if ( (position > sequenceSize - 1) || !(position + 1) ) {
         throw std::exception();
     }
@@ -191,14 +196,14 @@ void Sequence::erase(size_t position) { // TEST
         return;
     }
     if (position == 0) {
-        travel->next->prev = nullptr;
         head = travel->next;
+        head->prev = nullptr;
     }
     else travel->prev->next = travel->next;
 
-    if (position == sequenceSize) {
-        travel->prev->next = nullptr;
+    if (position == sequenceSize - 1) {
         tail = travel->prev;
+        tail->next = nullptr;
     }
     else travel->next->prev = travel->prev;
 
