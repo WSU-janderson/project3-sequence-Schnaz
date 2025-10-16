@@ -1,7 +1,7 @@
 /**
  * SequenceDebug.cpp
  * Project 3
- * CS 3100
+ * CS 3100 - Adam Hume
  *
  * In this file, you will write your tests as you implement Sequence. If you are using CLion, you need to select
  * SequenceDebug from the drop-down menu next to the Build (hammer icon) if it is on SequenceTestHarness
@@ -15,26 +15,55 @@
 using namespace std;
 
 int main() {
+
+    string str;
+
+    // Populate first sequence by filling blank members
+    Sequence seq1(3);
+    seq1[0]="one";
+    seq1[1]="two";
+    seq1[2]="three";
+
+    // Test default constructor for sequence and the push_back() function
+    Sequence seq2;
+    seq2.push_back("A");
+    seq2.push_back("B");
+    seq2.push_back("C");
+
+    // Print results
+    cout << "Test []overload\n" << seq1.size() << " nodes" << endl << seq1 << endl << endl;
+    cout << "Test pushback\n" << seq2.size() << " nodes" << endl << seq2 << endl << endl;
+
+    // Test pop_back
+    seq2.pop_back();
+    seq2.pop_back();
+    seq2.pop_back();
+    cout << "Test popback x 3\n" << seq2.size() << " nodes" << endl << seq2 << endl;
+
+    cout << "Test popback exception\n";
+    try {
+        seq1[3]="four";
+    }
+    catch (exception &e) {
+        cout << e.what() << endl;
+        cout << "exception thrown" << endl << endl;
+    }
+
+    seq1.insert(0,"counting:");
+    seq1.insert(3,"five");
+    cout << "Test insert\n" << seq1.size() << " nodes" << endl << seq1 << endl << endl;
+
+    cout << "Test insert exception\n";
+    try {
+        seq1.insert(5,"did you catch the monty python reference?");
+    }
+    catch (exception &e) {
+        cout << e.what() << endl;
+        cout << "exception thrown" << endl << endl;
+    }
+
+    cout << "Front: " + seq1.front() << endl << "Back: " + seq1.back() << endl << endl;
+
     cout << "Your project is ready to go!" << endl;
-    Sequence seq(3);
-    seq[0] = "zero";
-    seq[1] = "one";
-    seq[2] = "two";
-    //seq[3] = "three";
-    seq.push_back("three");
-    seq.push_back("four");
-    seq.push_back("five");
-    seq.pop_back();
-    seq.erase(3,2);
-    seq.insert(0, "extra");
-    //seq.push_back("pushback2");
-    //seq.push_back("pushback3");
-    seq.erase(3);
-    cout << seq.front() << " " << seq.head->next->item << " " << seq.head->next->next->item << " ";
-    if (seq.head->next->next->next == nullptr) {cout << "good\n";}
-    cout << seq.back() << " " << seq.tail->prev->item << " " << seq.tail->prev->prev->item << " ";
-    if (seq.tail->prev->prev->prev == nullptr) {cout << "good\n";}
-    cout << seq.sequenceSize << "\n";
-    cout << seq << endl;
     return 0;
 }
